@@ -1,0 +1,48 @@
+https://itnext.io/deploy-jenkins-with-dynamic-slaves-in-minikube-8aef5404e9c1
+
+#+NAME: working_directory
+#+BEGIN_SRC sh
+echo "~/Documents/my-dev/minikube-helm-jenkins"
+#+END_SRC
+
+#+RESULTS: working_directory
+: ~/Documents/my-dev/minikube-helm-jenkins
+
+#+NAME fix_vpn
+#+BEGIN_SRC sh
+sudo route add 192.168.99.0/24 -iface vboxnet0
+#+END_SRC
+
+#+NAME start_minikube
+#+BEGIN_SRC sh
+minikube start
+#+END_SRC
+
+#+NAME: check_status
+#+BEGIN_SRC 
+kubectl -n kube-system get po
+#+END_SRC
+
+#+NAME install_jenkins
+#+BEGIN_SRC sh :var dir=working_directory :dir="~/Documents/my-dev/minikube-helm-jenkins"
+echo $(pwd)
+helm install stable/jenkins -f helm/jenkins-values.yaml --name jenkins
+#+END_SRC
+
+
+#+NAME get_jenkins_password
+#+BEGIN_SRC sh
+printf $(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+#+END_SRC
+
+#+RESULTS:
+
+
+
+#+NAME: check_helm
+#+BEGIN_SRC sh
+helm ls
+#+END_SRC
+
+#+RESULTS: check_helm
+

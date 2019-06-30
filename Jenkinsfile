@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-#https://itnext.io/deploy-jenkins-with-dynamic-slaves-in-minikube-8aef5404e9c1
+//https://itnext.io/deploy-jenkins-with-dynamic-slaves-in-minikube-8aef5404e9c1
 
 podTemplate(label: 'mypod', containers: [
     containerTemplate(name: 'git', image: 'alpine/git', ttyEnabled: true, command: 'cat'),

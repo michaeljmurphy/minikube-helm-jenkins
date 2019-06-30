@@ -8,6 +8,11 @@ echo "~/Documents/my-dev/minikube-helm-jenkins"
 #+RESULTS: working_directory
 : ~/Documents/my-dev/minikube-helm-jenkins
 
+#+NAME: install_hyperkit
+#+BEGIN_SRC 
+brew install hyperkit docker-machine-driver-hyperkit minikube kubectl kubernetes-helm
+#+END_SRC
+
 #+NAME fix_vpn
 #+BEGIN_SRC sh
 sudo route add 192.168.99.0/24 -iface vboxnet0
@@ -15,24 +20,43 @@ sudo route add 192.168.99.0/24 -iface vboxnet0
 
 #+NAME start_minikube
 #+BEGIN_SRC sh
-minikube start
+minikube start -p jenkins --vm-driver=hyperkit
 #+END_SRC
 
-#+NAME: check_status
+#+NAME: create_namespace
+#+BEGIN_SRC sh
+kubectl create -f minikube/jenkins-namespace.yaml
+#+END_SRC
+
+#+NAME: verify_namespace
 #+BEGIN_SRC 
-kubectl -n kube-system get po
+kubectl get ns
 #+END_SRC
 
-#+NAME install_jenkins
-#+BEGIN_SRC sh :var dir=working_directory :dir="~/Documents/my-dev/minikube-helm-jenkins"
-echo $(pwd)
-helm install stable/jenkins -f helm/jenkins-values.yaml --name jenkins
+#+NAME: create_volume
+#+BEGIN_SRC sh :dir="~/Documents/my-dev/minikube-helm-jenkins"
+kubectl create -f minikube/jenkins-volume.yaml
+#+END_SRC
+
+#+NAME: init_helm
+#+BEGIN_SRC sh
+helm init
+#+END_SRC
+
+#+NAME: install_jenkins
+#+BEGIN_SRC 
+ minikube-helm-jenkins$ helm install --name jenkins -f helm/jenkins-values.yaml stable/jenkins --namespace jenkins-project
+#+END_SRC
+
+#+NAME: get_ip
+#+BEGIN_SRC 
+minikube docker-env -p jenkins
 #+END_SRC
 
 
 #+NAME get_jenkins_password
 #+BEGIN_SRC sh
-printf $(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+printf $(kubectl get secret --namespace jenkins-project jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
 #+END_SRC
 
 #+RESULTS:

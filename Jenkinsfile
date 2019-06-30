@@ -3,9 +3,7 @@
 //https://itnext.io/deploy-jenkins-with-dynamic-slaves-in-minikube-8aef5404e9c1
 
 podTemplate(label: 'mypod', containers: [
-    containerTemplate(name: 'git', image: 'alpine/git', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', command: 'cat', ttyEnabled: true),
-    containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true)
+    containerTemplate(name: 'sfdx', image: 'mjmsfdx/sfdx', ttyEnabled: true, command: 'cat'),
   ],
   volumes: [
     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
@@ -13,29 +11,20 @@ podTemplate(label: 'mypod', containers: [
   ) {
     node('mypod') {
         stage('Check running containers') {
-            container('docker') {
-                // example to show you can run docker commands when you mount the socket
-                sh 'hostname'
-                sh 'hostname -i'
-                sh 'docker ps'
+            container('sfdx') {
+                bash sfdx --help
             }
         }
         
         stage('Clone repository') {
-            container('git') {
-                sh 'whoami'
-                sh 'hostname -i'
-                sh 'git clone -b master https://github.com/lvthillo/hello-world-war.git'
+            container('sfdx') {
+                bash sfdx --help
             }
         }
 
         stage('Maven Build') {
-            container('maven') {
-                dir('hello-world-war/') {
-                    sh 'hostname'
-                    sh 'hostname -i'
-                    sh 'mvn clean install'
-                }
+            container('sfdx') {
+                bash sfdx --help
             }
         }
     }

@@ -45,7 +45,7 @@ helm init
 
 #+NAME: install_jenkins
 #+BEGIN_SRC 
- minikube-helm-jenkins$ helm install --name jenkins -f helm/jenkins-values.yaml stable/jenkins --namespace jenkins-project
+helm install --name jenkins -f helm/jenkins-values.yaml stable/jenkins --namespace jenkins-project
 #+END_SRC
 
 #+NAME: get_ip
@@ -60,8 +60,7 @@ printf $(kubectl get secret --namespace jenkins-project jenkins -o jsonpath="{.d
 #+END_SRC
 
 #+RESULTS:
-
-
+: 
 
 #+NAME: check_helm
 #+BEGIN_SRC sh

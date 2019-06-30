@@ -3,7 +3,7 @@
 //https://itnext.io/deploy-jenkins-with-dynamic-slaves-in-minikube-8aef5404e9c1
 
 podTemplate(label: 'mypod', containers: [
-    containerTemplate(name: 'sfdx', image: 'mjmsfdx/sfdx', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'sfdx', image: 'mjmsfdc/sfdx', ttyEnabled: true, command: 'cat'),
   ],
   volumes: [
     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),

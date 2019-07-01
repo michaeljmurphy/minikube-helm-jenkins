@@ -23,25 +23,53 @@ sudo route add 192.168.99.0/24 -iface vboxnet0
 minikube start -p jenkins --vm-driver=hyperkit
 #+END_SRC
 
+#+RESULTS:
+| minikube    | v1.1.0      | on    | darwin     | (amd64)        |               |        |         |
+| Creating    | hyperkit    | VM    | (CPUs=2,   | Memory=2048MB, | Disk=20000MB) | ...    |         |
+| Configuring | environment | for   | Kubernetes | v1.14.2        | on            | Docker | 18.09.6 |
+| Pulling     | images      | ...   |            |                |               |        |         |
+| Launching   | Kubernetes  | ...   |            |                |               |        |         |
+| Verifying:  | apiserver   | proxy | etcd       | scheduler      | controller    | dns    |         |
+| Done!       | kubectl     | is    | now        | configured     | to            | use    | jenkins |
+
 #+NAME: create_namespace
 #+BEGIN_SRC sh
 kubectl create -f minikube/jenkins-namespace.yaml
 #+END_SRC
 
+#+RESULTS: create_namespace
+: namespace/jenkins-project created
+
 #+NAME: verify_namespace
-#+BEGIN_SRC 
+#+BEGIN_SRC sh
 kubectl get ns
 #+END_SRC
+
+#+RESULTS: verify_namespace
+| NAME            | STATUS | AGE  |
+| default         | Active | 114s |
+| jenkins-project | Active | 5s   |
+| kube-node-lease | Active | 117s |
+| kube-public     | Active | 117s |
+| kube-system     | Active | 117s |
 
 #+NAME: create_volume
 #+BEGIN_SRC sh :dir="~/Documents/my-dev/minikube-helm-jenkins"
 kubectl create -f minikube/jenkins-volume.yaml
 #+END_SRC
 
-#+NAME: init_helm
-#+BEGIN_SRC sh
+#+RESULTS: create_volume
+: persistentvolume/jenkins-pv created
+
+#+NAME: init_helm 
+#+BEGIN_SRC sh 
 helm init
 #+END_SRC
+
+#+RESULTS: init_helm
+| $HELM_HOME | has           | been | configured | at        | /Users/michaelmurphy/.helm. |     |           |    |         |        |    |     |         |           |
+| Warning:   | Tiller        | is   | already    | installed | in                          | the | cluster.  |    |         |        |    |     |         |           |
+| (Use       | --client-only | to   | suppress   | this      | message,                    | or  | --upgrade | to | upgrade | Tiller | to | the | current | version.) |
 
 #+NAME: install_jenkins
 #+BEGIN_SRC 
@@ -49,9 +77,17 @@ helm install --name jenkins -f helm/jenkins-values.yaml stable/jenkins --namespa
 #+END_SRC
 
 #+NAME: get_ip
-#+BEGIN_SRC 
+#+BEGIN_SRC sh
 minikube docker-env -p jenkins
 #+END_SRC
+
+#+RESULTS: get_ip
+| export | 1                                    |            |             |    |           |      |        |
+| export | tcp://192.168.64.8:2376              |            |             |    |           |      |        |
+| export | /Users/michaelmurphy/.minikube/certs |            |             |    |           |      |        |
+| export | 1.39                                 |            |             |    |           |      |        |
+| #      | Run                                  | this       | command     | to | configure | your | shell: |
+| #      | eval                                 | $(minikube | docker-env) |    |           |      |        |
 
 
 #+NAME get_jenkins_password
@@ -68,4 +104,9 @@ helm ls
 #+END_SRC
 
 #+RESULTS: check_helm
+
+#+NAME: destroy
+#+BEGIN_SRC sh
+minikube stop -p jenkins && minikube delete -p jenkins
+#+END_SRC
 

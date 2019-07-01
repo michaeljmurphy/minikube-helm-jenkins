@@ -61,7 +61,7 @@ agent:
   cpu: "200m"
   memory: "256Mi"
   # You may want to change this to true while testing a new image
-  alwaysPullImage: false
+  alwaysPullImage: true
   # You can define the volumes that you want to mount for this container
   # Allowed types are: ConfigMap, EmptyDir, HostPath, Nfs, Pod, Secret
   volumes:

@@ -10,21 +10,21 @@ podTemplate(label: 'mypod', containers: [
   ]
   ) {
     node('mypod') {
-        stage('Check running containers') {
+        stage('ci') {
             container('sfdx') {
-                bash sfdx --help
+                sh 'sfdx --help'
             }
         }
         
-        stage('Clone repository') {
+        stage('dev') {
             container('sfdx') {
-                bash sfdx --help
+                sh 'sfdx --help'
             }
         }
 
-        stage('Maven Build') {
+        stage('test') {
             container('sfdx') {
-                bash sfdx --help
+                sh 'sfdx --help'
             }
         }
     }

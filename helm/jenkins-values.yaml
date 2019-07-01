@@ -10,6 +10,7 @@
 
 master:
   componentName: jenkins-master
+  # currently using my own container but it is unnecessary
   image: "mjmsfdc/jenkins"
   imageTag: "latest"
   imagePullPolicy: "Always"
@@ -51,44 +52,47 @@ master:
   customConfigMap: false
   nodeSelector: {}
   tolerations: {}
+
+  # not sure how to get this code block out of this file
   initScripts:
-    initialProjectSetup: |-      
+    init_project: |-
       #!/usr/bin/env groovy
       import jenkins.model.*
       import hudson.util.PersistedList
       import jenkins.branch.*
       import jenkins.plugins.git.*
       import org.jenkinsci.plugins.workflow.multibranch.*
-      
+
       // Git repo url containing a Jenkinsfile
       String gitRepoUrl = "https://github.com/michaeljmurphy/minikube-helm-jenkins"
-      
+
       // Job name based on repository name
       String jobName = gitRepoUrl.tokenize(".")[-2].tokenize("/")[-1]
-      
-      
+
+
       // Create MultiBranch pipeline
       Jenkins jenkins = Jenkins.get()
       WorkflowMultiBranchProject mbp = jenkins.createProject(WorkflowMultiBranchProject.class, jobName)
-      
+
       // Define Git repo
       //GitSCMSource(id, gitRepo, credentialsId, includes, excludes, ignoreOnPushNotifications)
       GitSCMSource gitSCMSource = new GitSCMSource("not_null", gitRepoUrl, "", "*", "", false)
       BranchSource branchSource = new BranchSource(gitSCMSource)
-      
+
       // Add Git repo as source to MBP
       PersistedList sources = mbp.getSourcesList()
       sources.add(branchSource)
-      
+
       // Trigger initial build (scan)
       jenkins.getItem(jobName).scheduleBuild()
-      
+
       // Save config
       jenkins.save()
+
 agent:
   enabled: true
   image: jenkins/jnlp-slave
-  imageTag: 3.10-1
+  imageTag: "latest"
   component: "jenkins-slave"
   privileged: false
   cpu: "200m"
@@ -129,12 +133,3 @@ networkPolicy:
   # For Kubernetes v1.4, v1.5 and v1.6, use 'extensions/v1beta1'
   # For Kubernetes v1.7, use 'networking.k8s.io/v1'
   apiVersion: networking.k8s.io/v1
-
-## Install Default RBAC roles and bindings
-# rbac:
-#   create: true
-#   serviceAccount.name: default
-#   # RBAC api version (currently either v1beta1 or v1alpha1)
-#   apiVersion: v1beta1
-#   # Cluster role reference
-#   roleRef: cluster-admin

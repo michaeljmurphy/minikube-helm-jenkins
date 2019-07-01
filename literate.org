@@ -105,8 +105,27 @@ helm ls
 
 #+RESULTS: check_helm
 
-#+NAME: destroy
+#+NAME: get_pods
 #+BEGIN_SRC sh
-minikube stop -p jenkins && minikube delete -p jenkins
+kubectl get pods --all-namespaces
 #+END_SRC
 
+#+RESULTS: get_pods
+| NAMESPACE       | NAME                                  | READY | STATUS  | RESTARTS | AGE   |
+| jenkins-project | jenkins-78d9476bf7-wsjtf              | 1/1   | Running |        0 | 8m27s |
+| kube-system     | coredns-fb8b8dccf-2bdx7               | 1/1   | Running |        1 | 11m   |
+| kube-system     | coredns-fb8b8dccf-6tdj2               | 1/1   | Running |        1 | 11m   |
+| kube-system     | etcd-minikube                         | 1/1   | Running |        0 | 11m   |
+| kube-system     | kube-addon-manager-minikube           | 1/1   | Running |        0 | 10m   |
+| kube-system     | kube-apiserver-minikube               | 1/1   | Running |        0 | 10m   |
+| kube-system     | kube-controller-manager-minikube      | 1/1   | Running |        0 | 10m   |
+| kube-system     | kube-proxy-kb6ph                      | 1/1   | Running |        0 | 11m   |
+| kube-system     | kube-scheduler-minikube               | 1/1   | Running |        0 | 10m   |
+| kube-system     | kubernetes-dashboard-79dd6bfc48-9mft8 | 1/1   | Running |        1 | 11m   |
+| kube-system     | storage-provisioner                   | 1/1   | Running |        1 | 11m   |
+| kube-system     | tiller-deploy-66b7dd976-zc8d5         | 1/1   | Running |        0 | 10m   |
+
+#+NAME: delete_all_running_containers
+#+BEGIN_SRC sh
+docker rm $(docker ps -aq)
+#+END_SRC
